@@ -19,7 +19,7 @@ if {[get_property STATUS [get_runs impl_1]] != "write_bitstream Complete!" \
 	|| [get_property NEEDS_REFRESH [get_runs impl_1]] != 0                 \
 } {
 	launch_runs impl_1 -to_step write_bitstream -jobs 12
-	wait_on_runs
+	wait_on_run impl_1
 	puts "INFO: write_bitstream complete"
 } else {
 	puts "INFO: write_bitsream already complete" 
