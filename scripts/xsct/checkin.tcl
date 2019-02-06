@@ -10,13 +10,12 @@
 ###     (repo)/sdk/_workspace/(bsp)/Makefile
 ###     (repo)/sdk/_workspace/(bsp)/system.mss
 
-set scripts_dir [file dirname [info script]]
-set repo_dir [file dirname $scripts_dir]
-set workspace_dir $repo_dir/sdk/_workspace
-set projects_dir $repo_dir/sdk/projects
+set repo_dir [file normalize [file dirname [info script]]/../..]
+set source_dir $repo_dir/sdk/_workspace
+set target_dir $repo_dir/sdk/projects
 
 #check if workspace open, if not, open it
-if {[getws] == ""} {setws $workspace_dir}
+if {[getws] == ""} {setws $source_dir}
 
 set app_patterns [list	\
 	.cproject			\
@@ -33,31 +32,22 @@ set bsp_patterns [list	\
 
 foreach type [list app bsp] patterns [list $app_patterns $bsp_patterns] {
 	foreach project [getprojects -type $type] {
-		if {[file exists $projects_dir/$project] == 0} {
-			file mkdir $projects_dir/$project
+		if {[file exists $target_dir/$project] == 0} {
+			file mkdir $target_dir/$project
 		}
 		foreach pattern $patterns {
-			foreach file [glob -nocomplain -tails -path $workspace_dir/$project/ $pattern] {
-				set source [file join $workspace_dir $project $file]
-				if {[file isdir $source]} {
-					puts "checking in directory $source to version control"
-				} else {
-					puts "checking in file $source to version control"
+			foreach file [glob -nocomplain -tails -type {d f} -path $source_dir/$project/ $pattern] {
+				set source $source_dir/$project/$file
+				set target $target_dir/$project/$file
+
+				puts "Checking $source into version control"
+				# Delete existing directories that will be copied - an error will be generated otherwise
+				if {[file isdir $source] != 0 && [file exists $target] != 0} {
+					# TODO: document danger of running this script
+					puts "WARNING: deleting directory $target"
+					file delete -force $target
 				}
-				set file_name [file join $project $file]
-				set source_path [split $workspace_dir /]
-				set target_path [split $projects_dir /]
-				set file_path [split $file_name /]
-				# Ensure directory substructure is maintained
-				while {[llength $file_path] > 1} {
-					lappend source_path [lindex $file_path 0]
-					lappend target_path [lindex $file_path 0]
-					set file_path [lreplace $file_path 0 0]
-					if {[file exists [join $target_path /]] == 0} {
-						file mkdir [join $target_path /]
-					}
-				}
-				file copy -force [file join $workspace_dir $file_name] [file join $projects_dir $file_name]
+				file copy -force $source $target
 			}
 		}
 	}

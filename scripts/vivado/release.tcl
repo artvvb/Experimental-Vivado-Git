@@ -1,6 +1,4 @@
-set repo_path [file dirname [file dirname [file dirname [info script]]]]
-
-#TODO check if repo paths exist
+set repo_path [file normalize [file dirname [info script]]/../..]
 
 # check if project is open
 if {[llength [get_projects]] == 0} {

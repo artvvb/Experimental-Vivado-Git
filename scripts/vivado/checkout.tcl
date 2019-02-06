@@ -1,6 +1,6 @@
-set repo_path [file dirname [file dirname [file dirname [info script]]]]
+set repo_path [file normalize [file dirname [info script]]/../..]
 set proj_name [file tail $repo_path]
-set xpr_path "$repo_path/vivado/_workspace/$proj_name.xpr"
+set xpr_path "${repo_path}/vivado/_workspace/${proj_name}.xpr"
 set vivado_version [version -short]
 set vivado_year [lindex [split $vivado_version .] 0]
 

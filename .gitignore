@@ -44,7 +44,7 @@ vivado/src/ip/*/**
 !vivado/src/other
 !vivado/src/other/**
 
-# sdk project sources -- FIXME
+# sdk project sources
 sdk/**
 !sdk/projects
 !sdk/projects/**

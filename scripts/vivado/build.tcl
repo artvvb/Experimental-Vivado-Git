@@ -1,15 +1,14 @@
-# TODO check if project open
-
+# if no project is open, check if there is a project in the repo and open it
 if {[llength [get_projects]] == 0} {
-	set repo_path [file dirname [file dirname [file dirname [info script]]]]
-	set xpr_paths [glob -nocomplain ${repo_path}/vivado/_workspace/*.xpr]
+	set repo_path [file normalize [file dirname [info script]]/../..]
+	set xpr_paths [glob -nocomplain $repo_path/vivado/_workspace/*.xpr]
 	if {[llength $xpr_paths] == 1} {
 		open_project [lindex $xpr_paths 0]
 	} elseif {[llength $xpr_paths] > 1} {
-		puts "ERROR: more than one project found in ${repo_path}/vivado/_workspace"
+		puts "ERROR: more than one project found in $repo_path/vivado/_workspace"
 		# TODO quit
 	} else {
-		puts "ERROR: no projects checked out, please source ${repo_path}/scripts/vivado/checkout.tcl"
+		puts "ERROR: no projects checked out, please source $repo_path/scripts/vivado/checkout.tcl"
 		# TODO quit
 	}
 }

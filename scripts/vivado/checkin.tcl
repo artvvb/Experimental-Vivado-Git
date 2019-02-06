@@ -1,12 +1,11 @@
-set vivado_dir $::env(XILINX_Vivado)
-
+# if no project is open, check if there is a project in the repo and open it
 if {[llength [get_projects]] == 0} {
 	set repo_path [file dirname [file dirname [file dirname [info script]]]]
-	set xpr_paths [glob -nocomplain ${repo_path}/vivado/_workspace/*.xpr]
+	set xpr_paths [glob -nocomplain $repo_path/vivado/_workspace/*.xpr]
 	if {[llength $xpr_paths] == 1} {
 		open_project [lindex $xpr_paths 0]
 	} elseif {[llength $xpr_paths] > 1} {
-		puts "ERROR: more than one project found in ${repo_path}/vivado/_workspace"
+		puts "ERROR: more than one project found in $repo_path/vivado/_workspace"
 		# TODO quit
 	} else {
 		puts "ERROR: no projects checked out cannot check in a non-existent project"
@@ -17,17 +16,15 @@ if {[llength [get_projects]] == 0} {
 set proj_obj [current_project]
 set proj_path [get_property DIRECTORY $proj_obj]
 set proj_name [get_property NAME $proj_obj]
-set repo_path [file dirname [file dirname [file dirname [info script]]]]
-set vivado_proj_file [file normalize "${proj_path}/${proj_name}.xpr"]
-set vivado_srcs_dir [file normalize "${proj_path}/${proj_name}.srcs"]
-set sdk_workspace [file normalize "${repo_path}/sdk/_workspace"]
+set repo_path [file normalize [file dirname [info script]]/../..]
+set vivado_proj_file [file normalize "$proj_path/$proj_name.xpr"]
+set vivado_srcs_dir [file normalize "$proj_path/$proj_name.srcs"]
 
 puts "proj_path = $proj_path"
 puts "proj_name = $proj_name"
 puts "repo_path = $repo_path"
 puts "vivado_proj_file = $vivado_proj_file"
 puts "vivado_srcs_dir = $vivado_srcs_dir"
-puts "sdk_workspace = sdk_workspace"
 
 set required_dirs [list               \
 	$repo_path/vivado                 \
@@ -51,8 +48,8 @@ foreach dir $required_dirs {
 
 if {[file exists $repo_path/.gitignore] == 0} {
 	puts "INFO: No gitignore detected, creating one now"
-	set source_file [file normalize [file dirname [info script]]/template.gitignore]
-	set target_file [file normalize ${repo_path}/.gitignore
+	set source_file [file normalize ${repo_path}/scripts/template.gitignore]
+	set target_file [file normalize ${repo_path}/.gitignore]
 	file copy -force $source_file $target_file
 }
 
@@ -164,7 +161,8 @@ puts $file_obj "	set_property \"target_language\" \"$target_language\" \$project
 puts $file_obj "}"
 close $file_obj
 
-source $repo_dir/scripts/vivado/handoff.tcl
+# TODO: Check the hardware handoff file into version control?
+# source $repo_path/scripts/vivado/handoff.tcl
 
 puts "INFO: Project $vivado_proj_file has been checked into version control"
 
