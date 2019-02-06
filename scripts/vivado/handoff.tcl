@@ -22,13 +22,13 @@ if {[get_property STATUS [get_runs impl_1]] != "write_bitstream Complete!" \
 	# TODO quit
 }
 
-set impl_dir [file normalize "$repo_path/vivado/_project/[current_project].runs/impl_1"]
+set impl_dir [file normalize "$repo_path/vivado/_workspace/[current_project].runs/impl_1"]
 set source_file_name [glob -nocomplain -tails -path $impl_dir/ *.sysdef]
 if {[llength $source_file_name] != 1} {
 	puts "ERROR: multiple or no sysdef files found"
 	# TODO quit
 }
-set source_file [file normalize $repo_path/vivado/_project/[current_project].runs/impl_1/$source_file_name]
+set source_file [file normalize $repo_path/vivado/_workspace/[current_project].runs/impl_1/$source_file_name]
 set target_file [file normalize $repo_path/sdk/handoff/[file rootname $source_file_name].hdf]
 
 file copy -force $source_file $target_file
