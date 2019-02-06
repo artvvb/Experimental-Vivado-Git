@@ -65,7 +65,11 @@ if {[llength $bd_files] > 1} {
 	write_bd_tcl -force -make_local $script_name
 	
 	set source_files [get_files -of_objects [get_filesets sources_1]] 
+	# filter out all BD sources
 	set non_bd_sources [lsearch -all -inline -nocase -not -glob $source_files $vivado_srcs_dir/sources_1/bd/*]
+	# filter out BD wrapper file
+	set bd_wrapper [get_files -filter "NAME=~*/[get_property NAME [get_bd_designs $bd_name]]_wrapper.*"]
+	set non_bd_sources [lsearch -all -inline -nocase -not -glob $non_bd_sources $bd_wrapper]
 	foreach origin $non_bd_sources {
 		set skip 0
 		if {[file extension $origin] == ".vhd"} {
